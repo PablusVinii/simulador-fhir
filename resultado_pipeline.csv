@@ -1,0 +1,5 @@
+status,id,erro,cpf,exame,valor
+201,1012,,07123456789,Hemoglobina,7.4 g/dL
+201,1013,,07123456789,Glicemia em jejum,95.0 mg/dL
+201,1014,,98765432100,Hemoglobina,16.2 g/dL
+201,1015,,11122233344,Glicemia em jejum,28.0 mg/dL
