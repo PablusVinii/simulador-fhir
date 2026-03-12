@@ -4,6 +4,9 @@ conn = sqlite3.connect('hospital_ses.db')
 cur = conn.cursor()
 
 cur.executescript('''
+DROP TABLE IF EXISTS pacientes;
+DROP TABLE IF EXISTS resultados_exame;
+
 CREATE TABLE IF NOT EXISTS pacientes (
     id          INTEGER PRIMARY KEY,
     cpf         TEXT NOT NULL,
@@ -35,8 +38,8 @@ CREATE TABLE IF NOT EXISTS resultados_exame (
 
 pacientes = [
     ('07123456789', 'Maria Aparecida da Silva', '1985-03-22', 'female'),
-    ('98765432100', 'João Carlos Pereira',      '1972-11-08', 'male'),
-    ('11122233344', 'Ana Beatriz Souza',         '1995-07-14', 'female'),
+    ('98765432100', 'Joao Carlos Pereira Junior', '1972-11-08', 'male'),
+    ('11122233344', 'Ana Beatriz Souza de Oliveira', '1995-07-14', 'female'),
 ]
 cur.executemany(
     'INSERT INTO pacientes (cpf,nome,nascimento,sexo) VALUES (?,?,?,?)',

@@ -63,7 +63,7 @@ def build_obs(row):
         'subject': {'identifier': {
             'system': 'http://rnds.saude.gov.br/fhir/r4/NamingSystem/cpf',
             'value': row['cpf_clean']
-        }},
+        }, 'display': row['nome']},
         'issued': row['data_emissao'],
         'performer': [
             {

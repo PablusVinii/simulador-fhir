@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FHIR Data Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <h1>DataEngine <span style="font-weight: 300;">FHIR</span></h1>
+            </div>
+            <button class="btn btn-primary" onclick="openModal()">
+                <i class="fa-solid fa-plus"></i> Novo Exame
+            </button>
+        </header>
+
+        <section id="stats" style="margin-bottom: 2rem; display: flex; gap: 2rem;">
+            <div style="color: var(--text-dim); font-size: 0.9rem;">
+                Total de Observações: <span id="obs-count" style="color: var(--primary); font-weight: 700;">-</span>
+            </div>
+        </section>
+
+        <main id="obs-grid" class="grid">
+            <div class="loading">Carregando dados do servidor...</div>
+        </main>
+    </div>
+
+    <!-- Modal para Create/Update -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2 id="modal-title" style="margin-bottom: 1.5rem;">Cadastrar Exame</h2>
+            <form id="fhir-form">
+                <input type="hidden" id="edit-id">
+                <div class="form-group">
+                    <label>Paciente (CPF)</label>
+                    <input type="text" id="patient-cpf" placeholder="000.000.000-00" required>
+                </div>
+                <div class="form-group">
+                    <label>Descrição do Exame</label>
+                    <input type="text" id="obs-desc" placeholder="Ex: Hemoglobina" required>
+                </div>
+                <div class="form-group" style="display: flex; gap: 1rem;">
+                    <div style="flex: 2;">
+                        <label>Valor</label>
+                        <input type="number" id="obs-value" step="0.1" required>
+                    </div>
+                    <div style="flex: 1;">
+                        <label>Unidade</label>
+                        <input type="text" id="obs-unit" placeholder="g/dL" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Código LOINC</label>
+                    <input type="text" id="obs-loinc" placeholder="Ex: 718-7">
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="button" class="btn" onclick="closeModal()" style="flex: 1; background: var(--glass); color: var(--text);">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 2;">Salvar Recurso</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

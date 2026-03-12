@@ -1,81 +1,68 @@
-# Trajetória: Implementação do Simulador de Integração FHIR
+# FHIR Data Engine & Dashboard 🚀
 
-Este documento detalha o processo passo a passo para configurar um ambiente local de interoperabilidade em saúde, desde a subida do servidor FHIR até a execução da pipeline de dados.
+Este projeto é um laboratório completo de **Engenharia de Dados em Saúde**, cobrindo desde a extração de sistemas legados até a visualização em uma aplicação interoperável no padrão **HL7 FHIR**.
 
-## 1. Configuração do Servidor FHIR Local
+## 📋 Visão Geral do Ecossistema
 
-Para que o projeto tenha onde salvar os dados, é necessário um servidor que suporte o padrão HL7 FHIR. A forma mais rápida e comum é utilizar o **HAPI FHIR Starter**.
+O projeto simula um fluxo real de dados hospitalares, onde resultados de exames laboratoriais são integrados a um servidor central e disponibilizados para uma interface de gestão.
 
-### Pré-requisitos
-*   Docker instalado (recomendado) ou ambiente Java (JDK 11+).
+```mermaid
+graph LR
+    Relacional[(SQLite - Banco Legado)] --> Python[Pipeline ETL Python]
+    Python --> FHIR_Server((HAPI FHIR Server))
+    FHIR_Server --> Dashboard[Dashboard Web CRUD]
+```
 
-### Passo a passo (via Docker)
-1.  Abra o terminal e execute o comando para subir o container do servidor:
-    ```bash
-    docker run -d -p 8080:8080 --name hapi-fhir hapiproject/hapi-fhir-jpaserver-starter
-    ```
-2.  Aguarde alguns minutos para a inicialização.
-3.  Acesse `http://localhost:8080/fhir` no navegador. Se a página do HAPI carregar, o servidor está pronto para receber requisições.
+## 🏗️ Pilares Técnicos Abordados
 
----
+### 1. Engenharia de Dados & ETL
+*   **Extração Incremental**: O sistema utiliza controle de estado (coluna `processado`) para garantir que apenas dados novos sejam integrados, evitando duplicidade e economizando processamento.
+*   **Transformação de Dados**: Conversão de tipos relacionais para objetos JSON complexos seguindo a especificação FHIR R4.
 
-## 2. Preparação do Ambiente Python
+### 2. FHIR Interoperability (Protocolo)
+*   **FHIR Bundles (Transações)**: Implementação de envios atômicos. Todas as observações são empacotadas em uma única transação "tudo ou nada", garantindo a integridade referencial no servidor.
+*   **Terminologias Internacionais**: Uso prático de sistemas de codificação padrão:
+    *   **LOINC**: Identificação universal de exames laboratoriais.
+    *   **UCUM**: Padronização de unidades de medida.
+*   **Identificadores RNDS**: Utilização de padrões brasileiros para identificação de pacientes (CPF) e estabelecimentos (CNES).
 
-O projeto utiliza Python para orquestrar a extração e transformação dos dados.
-
-1.  **Criação do Ambiente Virtual**:
-    ```bash
-    python -m venv .venv
-    source .venv/bin/activate  # No Windows: .venv\Scripts\activate
-    ```
-2.  **Instalação das Bibliotecas**:
-    ```bash
-    pip install pandas requests
-    ```
-
----
-
-## 3. Preparação do "Legado" (Banco de Dados)
-
-Antes de integrar, precisamos dos dados brutos. O arquivo `setup_banco.py` simula o banco de dados de um hospital real.
-
-1.  Execute o script para criar o banco de dados SQLite local:
-    ```bash
-    python setup_banco.py
-    ```
-2.  Isso criará o arquivo `hospital_ses.db` com tabelas de pacientes e resultados de exames laboratoriais pré-configurados.
+### 3. Frontend & Aplicação (Dashboard)
+*   **Dashboard Moderno**: Interface em *Dark Mode* com *Glassmorphism* para visualização e gestão clínica.
+*   **Operações CRUD**: 
+    *   **Create**: Inclusão manual de novos registros FHIR via formulário.
+    *   **Read**: Consumo da API FHIR com busca em tempo real.
+    *   **Update**: Edição de recursos existentes via método `PUT`.
+    *   **Delete**: Remoção física de recursos do servidor.
 
 ---
 
-## 4. Execução da Pipeline de Integração
+## 🛠️ Guia de Instalação e Uso
 
-Com o banco local pronto e o servidor HAPI rodando, executamos o processo de ETL (Extração, Transformação e Carga).
+### 1. Servidor FHIR
+Suba o servidor de referência (HAPI FHIR) via Docker:
+```bash
+docker run -d -p 8080:8080 --name hapi-fhir hapiproject/hapi-fhir-jpaserver-starter
+```
 
-1.  Execute o script principal:
-    ```bash
-    python pipeline_rel.py
-    ```
-2.  **O que acontece durante a execução**:
-    *   **Extração**: O script lê os dados do SQLite e junta as informações de paciente com seus exames.
-    *   **Transformação**: O script converte CPFs, limpa strings e mapeia os resultados para o formato JSON FHIR (Recurso `Observation`).
-    *   **Carga**: Cada exame é enviado via POST para `http://localhost:8080/fhir/Observation`.
+### 2. Backend (Pipeline)
+1. Instale as bibliotecas: `pip install pandas requests`
+2. Prepare o banco legado: `python setup_banco.py`
+3. Execute a integração: `python pipeline_rel.py`
 
----
-
-## 5. Verificação dos Resultados
-
-Existem duas formas de validar se a trajetória foi concluída com sucesso:
-
-1.  **Relatório CSV**: O arquivo `resultado_pipeline.csv` será gerado na pasta do projeto, mostrando o status HTTP de cada envio (Status 201 significa "Criado com Sucesso").
-2.  **Consulta no Servidor**:
-    *   Vá ao navegador em `http://localhost:8080/fhir/Observation`.
-    *   Você verá a lista de recursos que o seu script acabou de injetar no servidor.
+### 3. Frontend (Dashboard)
+Para evitar bloqueios de segurança (CORS) ao acessar o servidor FHIR:
+1. Navegue até a pasta: `cd frontend`
+2. Inicie o servidor web: `python -m http.server 3000`
+3. Acesse: `http://127.0.0.1:3000`
 
 ---
 
-## Glossário de Tecnologias Utilizadas
-*   **FHIR**: Padrão internacional para troca de dados de saúde.
-*   **HAPI FHIR**: Servidor open-source de referência para implementação do padrão.
-*   **LOINC**: Sistema de codificação para exames laboratoriais.
-*   **SQLite**: Banco de dados leve usado para simular o sistema hospitalar legado.
-*   **Python + Pandas**: Ferramentas para manipulação e limpeza de dados em larga escala.
+## 📂 Arquivos do Projeto
+
+*   `/frontend`: Dashboard HTML/CSS/JS para gestão dos dados.
+*   `setup_banco.py`: Script de criação e mock de dados do sistema hospitalar.
+*   `pipeline_rel.py`: Orquestrador de dados (SQL -> FHIR Bundle).
+*   `hospital_ses.db`: Banco de dados SQLite simulando o legado.
+
+## 🎓 Objetivos de Aprendizado
+Este projeto demonstra a capacidade de um Engenheiro de Dados em Saúde de atuar em todas as camadas: infraestrutura de banco de dados, lógica de transformação e padrões internacionais de interoperabilidade.
