@@ -6,6 +6,8 @@ Este projeto é um laboratório completo de **Engenharia de Dados em Saúde**, c
 
 O projeto simula um fluxo real de dados hospitalares, onde resultados de exames laboratoriais são integrados a um servidor central e disponibilizados para uma interface de gestão.
 
+![Visual do Dashboard](img/dashboard.png)
+
 ```mermaid
 graph LR
     Relacional[(SQLite - Banco Legado)] --> Python[Pipeline ETL Python]
@@ -35,6 +37,9 @@ graph LR
     *   **Delete**: Remoção física de recursos do servidor.
 
 ---
+
+![Visual do Servidor FHIR](img/servidor.png)
+![Visual do Pipeline](img/pipeline.png)
 
 ## 🛠️ Guia de Instalação e Uso
 
