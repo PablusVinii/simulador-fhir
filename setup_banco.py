@@ -28,7 +28,8 @@ CREATE TABLE IF NOT EXISTS resultados_exame (
     cnes_lab        TEXT NOT NULL,
     cpf_responsavel TEXT NOT NULL,
     conselho        TEXT NOT NULL,
-    loinc           TEXT
+    loinc           TEXT,
+    processado      INTEGER DEFAULT 0
 );
 ''')
 
